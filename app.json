@@ -1,23 +1,14 @@
 {
   "name": "pgweb",
   "description": "A web-based frontend to your Postgres database.",
-  "website": "https://github.com/sosedoff/pgweb",
-  "repository": "https://github.com/sosedoff/pgweb",
-  "logo": "https://raw.githubusercontent.com/sosedoff/pgweb/master/static/img/icon.png",
+  "website": "https://github.com/cyralinc/pgweb",
+  "repository": "https://github.com/cyralinc/pgweb",
+  "logo": "https://public-cyral-assets.s3-us-west-1.amazonaws.com/cyral-owl-icon.svg",
   "success_url": "/",
-  "keywords": [
-    "postgres",
-    "database",
-    "golang",
-    "frontend"
-  ],
-  "addons": [
-    "heroku-postgresql"
-  ],
   "env": {
     "AUTH_USER": {
       "description": "A username to log into pgweb.",
-      "value": "admin"
+      "value": "cyral_admin"
     },
     "AUTH_PASS": {
       "description": "The login password. Please change this.",
