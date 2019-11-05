@@ -89,7 +89,7 @@ SESSIONS=1 pgweb
 
 ## Deploy on Heroku
 
-[![Heroku Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/cyralinc/pgweb)
+[![Heroku Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/cyralinc/pgweb/tree/change-imports)
 
 ## Testing
 
