@@ -8,7 +8,7 @@ RUN \
   update-ca-certificates && \
   rm -rf /var/cache/apk/* && \
   cd /tmp && \
-  wget -q https://github.com/sosedoff/pgweb/releases/download/v$PGWEB_VERSION/pgweb_linux_amd64.zip && \
+  wget -q https://github.com/cyralinc/pgweb/releases/download/v$PGWEB_VERSION/pgweb_linux_amd64.zip && \
   unzip pgweb_linux_amd64.zip -d /usr/bin && \
   mv /usr/bin/pgweb_linux_amd64 /usr/bin/pgweb && \
   rm -f pgweb_linux_amd64.zip

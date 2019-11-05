@@ -9,8 +9,8 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/mitchellh/go-homedir"
 
-	"github.com/sosedoff/pgweb/pkg/command"
-	"github.com/sosedoff/pgweb/pkg/shared"
+	"github.com/cyralinc/pgweb/pkg/command"
+	"github.com/cyralinc/pgweb/pkg/shared"
 )
 
 type Bookmark struct {

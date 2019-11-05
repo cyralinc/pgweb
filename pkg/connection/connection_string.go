@@ -8,7 +8,7 @@ import (
 	"os/user"
 	"strings"
 
-	"github.com/sosedoff/pgweb/pkg/command"
+	"github.com/cyralinc/pgweb/pkg/command"
 )
 
 // Common errors
