@@ -1,20 +1,20 @@
-var editor = null;
-var connected = false;
-var bookmarks = {};
+var editor             = null;
+var connected          = false;
+var bookmarks          = {};
 var default_rows_limit = 100;
-var currentObject = null;
+var currentObject      = null;
 
 var filterOptions = {
-  equal: "= 'DATA'",
-  not_equal: "!= 'DATA'",
-  greater: "> 'DATA'",
-  greater_eq: ">= 'DATA'",
-  less: "< 'DATA'",
-  less_eq: "<= 'DATA'",
-  like: "LIKE 'DATA'",
-  ilike: "ILIKE 'DATA'",
-  null: "IS NULL",
-  not_null: "IS NOT NULL"
+  "equal":      "= 'DATA'",
+  "not_equal":  "!= 'DATA'",
+  "greater":    "> 'DATA'" ,
+  "greater_eq": ">= 'DATA'",
+  "less":       "< 'DATA'",
+  "less_eq":    "<= 'DATA'",
+  "like":       "LIKE 'DATA'",
+  "ilike":      "ILIKE 'DATA'",
+  "null":       "IS NULL",
+  "not_null":   "IS NOT NULL"
 };
 
 function getSessionId() {
@@ -37,7 +37,7 @@ function getRowsLimit() {
 }
 
 function getPaginationOffset() {
-  var page = $(".current-page").data("page");
+  var page  = $(".current-page").data("page");
   var limit = getRowsLimit();
   return (page - 1) * limit;
 }
@@ -46,7 +46,7 @@ function getPagesCount(rowsCount) {
   var limit = getRowsLimit();
   var num = parseInt(rowsCount / limit);
 
-  if (num * limit < rowsCount) {
+  if ((num * limit) < rowsCount) {
     num++;
   }
 
@@ -70,7 +70,7 @@ function apiCall(method, path, params, cb) {
     },
     error: function(xhr, status, data) {
       if (status == "timeout") {
-        return cb({ error: "Query timeout after " + timeout / 1000 + "s" });
+        return cb({ error: "Query timeout after " + (timeout / 1000) + "s" });
       }
 
       cb(jQuery.parseJSON(xhr.responseText));
@@ -78,75 +78,45 @@ function apiCall(method, path, params, cb) {
   });
 }
 
-function getInfo(cb) {
-  apiCall("get", "/info", {}, cb);
-}
-function getObjects(cb) {
-  apiCall("get", "/objects", {}, cb);
-}
-function getTables(cb) {
-  apiCall("get", "/tables", {}, cb);
-}
-function getTableRows(table, opts, cb) {
-  apiCall("get", "/tables/" + table + "/rows", opts, cb);
-}
-function getTableStructure(table, opts, cb) {
-  apiCall("get", "/tables/" + table, opts, cb);
-}
-function getTableIndexes(table, cb) {
-  apiCall("get", "/tables/" + table + "/indexes", {}, cb);
-}
-function getTableConstraints(table, cb) {
-  apiCall("get", "/tables/" + table + "/constraints", {}, cb);
-}
-function getHistory(cb) {
-  apiCall("get", "/history", {}, cb);
-}
-function getBookmarks(cb) {
-  apiCall("get", "/bookmarks", {}, cb);
-}
-function executeQuery(query, cb) {
-  apiCall("post", "/query", { query: query }, cb);
-}
-function explainQuery(query, cb) {
-  apiCall("post", "/explain", { query: query }, cb);
-}
-function disconnect(cb) {
-  apiCall("post", "/disconnect", {}, cb);
-}
+function getInfo(cb)                        { apiCall("get", "/info", {}, cb); }
+function getObjects(cb)                     { apiCall("get", "/objects", {}, cb); }
+function getTables(cb)                      { apiCall("get", "/tables", {}, cb); }
+function getTableRows(table, opts, cb)      { apiCall("get", "/tables/" + table + "/rows", opts, cb); }
+function getTableStructure(table, opts, cb) { apiCall("get", "/tables/" + table, opts, cb); }
+function getTableIndexes(table, cb)         { apiCall("get", "/tables/" + table + "/indexes", {}, cb); }
+function getTableConstraints(table, cb)     { apiCall("get", "/tables/" + table + "/constraints", {}, cb); }
+function getHistory(cb)                     { apiCall("get", "/history", {}, cb); }
+function getBookmarks(cb)                   { apiCall("get", "/bookmarks", {}, cb); }
+function executeQuery(query, cb)            { apiCall("post", "/query", { query: query }, cb); }
+function explainQuery(query, cb)            { apiCall("post", "/explain", { query: query }, cb); }
+function disconnect(cb)                     { apiCall("post", "/disconnect", {}, cb); }
 
 function encodeQuery(query) {
-  return Base64.encode(query)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=/g, ".");
+  return Base64.encode(query).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, ".");
 }
 
 function buildSchemaSection(name, objects) {
   var section = "";
 
   var titles = {
-    table: "Tables",
-    view: "Views",
-    materialized_view: "Materialized Views",
-    sequence: "Sequences"
+    "table":             "Tables",
+    "view":              "Views",
+    "materialized_view": "Materialized Views",
+    "sequence":          "Sequences"
   };
 
   var icons = {
-    table: '<i class="fa fa-table"></i>',
-    view: '<i class="fa fa-table"></i>',
-    materialized_view: '<i class="fa fa-table"></i>',
-    sequence: '<i class="fa fa-circle-o"></i>'
+    "table":             '<i class="fa fa-table"></i>',
+    "view":              '<i class="fa fa-table"></i>',
+    "materialized_view": '<i class="fa fa-table"></i>',
+    "sequence":          '<i class="fa fa-circle-o"></i>'
   };
 
   var klass = "";
   if (name == "public") klass = "expanded";
 
   section += "<div class='schema " + klass + "'>";
-  section +=
-    "<div class='schema-name'><i class='fa fa-folder-o'></i><i class='fa fa-folder-open-o'></i> " +
-    name +
-    "</div>";
+  section += "<div class='schema-name'><i class='fa fa-folder-o'></i><i class='fa fa-folder-open-o'></i> " + name + "</div>";
   section += "<div class='schema-container'>";
 
   ["table", "view", "materialized_view", "sequence"].forEach(function(group) {
@@ -154,31 +124,13 @@ function buildSchemaSection(name, objects) {
     if (name == "public" && group == "table") group_klass = "expanded";
 
     section += "<div class='schema-group " + group_klass + "'>";
-    section +=
-      "<div class='schema-group-title'><i class='fa fa-chevron-right'></i><i class='fa fa-chevron-down'></i> " +
-      titles[group] +
-      " <span class='schema-group-count'>" +
-      objects[group].length +
-      "</span></div>";
+    section += "<div class='schema-group-title'><i class='fa fa-chevron-right'></i><i class='fa fa-chevron-down'></i> " + titles[group] + " <span class='schema-group-count'>" + objects[group].length + "</span></div>";
     section += "<ul data-group='" + group + "'>";
 
     if (objects[group]) {
       objects[group].forEach(function(item) {
         var id = name + "." + item;
-        section +=
-          "<li class='schema-item schema-" +
-          group +
-          "' data-type='" +
-          group +
-          "' data-id='" +
-          id +
-          "' data-name='" +
-          item +
-          "'>" +
-          icons[group] +
-          "&nbsp;" +
-          item +
-          "</li>";
+        section += "<li class='schema-item schema-" + group + "' data-type='" + group + "' data-id='" + id + "' data-name='" + item + "'>" + icons[group] + "&nbsp;" + item + "</li>";
       });
       section += "</ul></div>";
     }
@@ -216,15 +168,13 @@ function loadSchemas() {
 
 function escapeHtml(str) {
   if (str != null || str != undefined) {
-    return jQuery("<div/>")
-      .text(str)
-      .html();
+    return jQuery("<div/>").text(str).html();
   }
 
   return "<span class='null'>null</span>";
 }
 
-function unescapeHtml(str) {
+function unescapeHtml(str){
   var e = document.createElement("div");
   e.innerHTML = str;
   return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
@@ -235,23 +185,22 @@ function getCurrentObject() {
 }
 
 function resetTable() {
-  $("#results")
-    .data("mode", "")
-    .removeClass("empty")
-    .removeClass("no-crop");
-
+  $("#results").
+    data("mode", "").
+    removeClass("empty").
+    removeClass("no-crop");
+  
   $("#results_header").html("");
   $("#results_body").html("");
 }
 
 function performTableAction(table, action, el) {
   if (action == "truncate" || action == "delete") {
-    var message =
-      "Are you sure you want to " + action + " table " + table + " ?";
+    var message = "Are you sure you want to " + action + " table " + table + " ?";
     if (!confirm(message)) return;
   }
 
-  switch (action) {
+  switch(action) {
     case "truncate":
       executeQuery("TRUNCATE TABLE " + table, function(data) {
         if (data.error) alert(data.error);
@@ -270,31 +219,17 @@ function performTableAction(table, action, el) {
       var db = $("#current_database").text();
       var filename = db + "." + table + "." + format;
       var query = window.encodeURI("SELECT * FROM " + table);
-      var url =
-        window.location.href.split("#")[0] +
-        "api/query?format=" +
-        format +
-        "&filename=" +
-        filename +
-        "&query=" +
-        query +
-        "&_session_id=" +
-        getSessionId();
-      var win = window.open(url, "_blank");
+      var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&filename=" + filename + "&query=" + query + "&_session_id=" + getSessionId();
+      var win  = window.open(url, "_blank");
       win.focus();
       break;
     case "dump":
-      var url =
-        window.location.href.split("#")[0] +
-        "api/export?table=" +
-        table +
-        "&_session_id=" +
-        getSessionId();
-      var win = window.open(url, "_blank");
+      var url = window.location.href.split("#")[0] + "api/export?table=" + table + "&_session_id=" + getSessionId();
+      var win  = window.open(url, "_blank");
       win.focus();
       break;
     case "copy":
-      copyToClipboard(table.split(".")[1]);
+      copyToClipboard(table.split('.')[1]);
       break;
   }
 }
@@ -305,7 +240,7 @@ function performViewAction(view, action, el) {
     if (!confirm(message)) return;
   }
 
-  switch (action) {
+  switch(action) {
     case "delete":
       executeQuery("DROP VIEW " + view, function(data) {
         if (data.error) alert(data.error);
@@ -318,21 +253,12 @@ function performViewAction(view, action, el) {
       var db = $("#current_database").text();
       var filename = db + "." + view + "." + format;
       var query = window.encodeURI("SELECT * FROM " + view);
-      var url =
-        window.location.href.split("#")[0] +
-        "api/query?format=" +
-        format +
-        "&filename=" +
-        filename +
-        "&query=" +
-        query +
-        "&_session_id=" +
-        getSessionId();
-      var win = window.open(url, "_blank");
+      var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&filename=" + filename + "&query=" + query + "&_session_id=" + getSessionId();
+      var win  = window.open(url, "_blank");
       win.focus();
       break;
     case "copy":
-      copyToClipboard(view.split(".")[1]);
+      copyToClipboard(view.split('.')[1]);
       break;
   }
 }
@@ -383,20 +309,10 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
   results.columns.forEach(function(col) {
     if (col === sortColumn) {
-      cols +=
-        "<th class='table-header-col active' data-name='" +
-        col +
-        "'" +
-        "data-order=" +
-        sortOrder +
-        ">" +
-        col +
-        "&nbsp;" +
-        sortArrow(sortOrder) +
-        "</th>";
-    } else {
-      cols +=
-        "<th class='table-header-col' data-name='" + col + "'>" + col + "</th>";
+      cols += "<th class='table-header-col active' data-name='" + col + "'" + "data-order=" + sortOrder + ">" + col + "&nbsp;" + sortArrow(sortOrder) + "</th>";
+    }
+    else {
+      cols += "<th class='table-header-col' data-name='" + col + "'>" + col + "</th>";
     }
   });
 
@@ -413,22 +329,12 @@ function buildTable(results, sortColumn, sortOrder, options) {
 
     // Add all actual row data here
     for (i in row) {
-      r +=
-        "<td data-col='" + i + "'><div>" + escapeHtml(row[i]) + "</div></td>";
+      r += "<td data-col='" + i + "'><div>" + escapeHtml(row[i]) + "</div></td>";
     }
 
     // Add row action button
     if (action) {
-      r +=
-        "<td><a class='btn btn-xs btn-" +
-        action.style +
-        " row-action' data-action='" +
-        action.name +
-        "' data-value='" +
-        row[action.dataColumn] +
-        "' href='#'>" +
-        action.title +
-        "</a></td>";
+      r += "<td><a class='btn btn-xs btn-" + action.style + " row-action' data-action='" + action.name + "' data-value='" + row[action.dataColumn] + "' href='#'>" + action.title + "</a></td>";
     }
 
     rows += "<tr>" + r + "</tr>";
@@ -458,7 +364,7 @@ function showQueryHistory() {
   getHistory(function(data) {
     var rows = [];
 
-    for (i in data) {
+    for(i in data) {
       rows.unshift([parseInt(i) + 1, data[i].query, data[i].timestamp]);
     }
 
@@ -529,27 +435,27 @@ function showTableInfo() {
 
 function updatePaginator(pagination) {
   if (!pagination) {
-    $(".current-page")
-      .data("page", 1)
-      .data("pages", 1);
+    $(".current-page").data("page", 1).data("pages", 1);
     $("button.page").text("1 of 1");
     $(".prev-page, .next-page").prop("disabled", "disabled");
     return;
   }
 
-  $(".current-page")
-    .data("page", pagination.page)
-    .data("pages", pagination.pages_count);
+  $(".current-page").
+    data("page", pagination.page).
+    data("pages", pagination.pages_count);
 
   if (pagination.page > 1) {
     $(".prev-page").prop("disabled", "");
-  } else {
+  }
+  else {
     $(".prev-page").prop("disabled", "disabled");
   }
 
   if (pagination.pages_count > 1 && pagination.page < pagination.pages_count) {
     $(".next-page").prop("disabled", "");
-  } else {
+  }
+  else {
     $(".next-page").prop("disabled", "disabled");
   }
 
@@ -567,16 +473,16 @@ function showTableContent(sortColumn, sortOrder) {
   }
 
   var opts = {
-    limit: getRowsLimit(),
-    offset: getPaginationOffset(),
+    limit:       getRowsLimit(),
+    offset:      getPaginationOffset(),
     sort_column: sortColumn,
-    sort_order: sortOrder
+    sort_order:  sortOrder
   };
 
   var filter = {
     column: $(".filters select.column").val(),
-    op: $(".filters select.filter").val(),
-    input: $(".filters input").val()
+    op:     $(".filters select.filter").val(),
+    input:  $(".filters input").val()
   };
 
   // Apply filtering only if column is selected
@@ -597,9 +503,7 @@ function showTableContent(sortColumn, sortOrder) {
     setCurrentTab("table_content");
     updatePaginator(data.pagination);
 
-    $("#results")
-      .data("mode", "browse")
-      .data("table", name);
+    $("#results").data("mode", "browse").data("table", name);
   });
 }
 
@@ -644,7 +548,7 @@ function showQueryPanel() {
   editor.focus();
 
   $("#input").show();
-  $("#body").prop("class", "");
+  $("#body").prop("class", "")
 }
 
 function showConnectionPanel() {
@@ -653,7 +557,7 @@ function showConnectionPanel() {
   apiCall("get", "/connection", {}, function(data) {
     var rows = [];
 
-    for (key in data) {
+    for(key in data) {
       rows.push([key, data[key]]);
     }
 
@@ -675,7 +579,7 @@ function showActivityPanel() {
       data: "pid",
       style: "danger"
     }
-  };
+  }
 
   setCurrentTab("table_activity");
   apiCall("get", "/activity", {}, function(data) {
@@ -751,15 +655,8 @@ function exportTo(format) {
     return;
   }
 
-  var url =
-    window.location.href.split("#")[0] +
-    "api/query?format=" +
-    format +
-    "&query=" +
-    encodeQuery(query) +
-    "&_session_id=" +
-    getSessionId();
-  var win = window.open(url, "_blank");
+  var url = window.location.href.split("#")[0] + "api/query?format=" + format + "&query=" + encodeQuery(query) + "&_session_id=" + getSessionId();
+  var win = window.open(url, '_blank');
 
   setCurrentTab("table_query");
   win.focus();
@@ -772,14 +669,7 @@ function showUniqueColumnsValues(table, column, showCounts) {
   // Display results ordered by counts.
   // This could be slow on large sets without an index.
   if (showCounts) {
-    query =
-      'SELECT DISTINCT "' +
-      column +
-      '", COUNT(1) AS total_count FROM ' +
-      table +
-      ' GROUP BY "' +
-      column +
-      '" ORDER BY total_count DESC';
+    query = 'SELECT DISTINCT "' + column + '", COUNT(1) AS total_count FROM ' + table + ' GROUP BY "' + column + '" ORDER BY total_count DESC';
   }
 
   executeQuery(query, function(data) {
@@ -792,16 +682,8 @@ function showUniqueColumnsValues(table, column, showCounts) {
 
 // Show numeric stats on the field
 function showFieldNumStats(table, column) {
-  var query =
-    "SELECT count(1), min(" +
-    column +
-    "), max(" +
-    column +
-    "), avg(" +
-    column +
-    ") FROM " +
-    table;
-
+  var query = 'SELECT count(1), min(' + column + '), max(' + column + '), avg(' + column + ') FROM ' + table;
+  
   executeQuery(query, function(data) {
     $("#input").hide();
     $("#body").prop("class", "full");
@@ -814,20 +696,17 @@ function buildTableFilters(name, type) {
   getTableStructure(name, { type: type }, function(data) {
     if (data.rows.length == 0) {
       $("#pagination .filters").hide();
-    } else {
+    }
+    else {
       $("#pagination .filters").show();
     }
 
-    $("#pagination select.column").html(
-      "<option value='' selected>Select column</option>"
-    );
+    $("#pagination select.column").html("<option value='' selected>Select column</option>");
 
     for (var i = 0; i < data.rows.length; i++) {
       var row = data.rows[i];
 
-      var el = $("<option/>")
-        .attr("value", row[0])
-        .text(row[0]);
+      var el = $("<option/>").attr("value", row[0]).text(row[0]);
       $("#pagination select.column").append(el);
     }
   });
@@ -844,28 +723,25 @@ function initEditor() {
   editor.getSession().setTabSize(2);
   editor.getSession().setUseSoftTabs(true);
 
-  editor.commands.addCommands([
-    {
-      name: "run_query",
-      bindKey: {
-        win: "Ctrl-Enter",
-        mac: "Command-Enter"
-      },
-      exec: function(editor) {
-        runQuery();
-      }
+  editor.commands.addCommands([{
+    name: "run_query",
+    bindKey: {
+      win: "Ctrl-Enter",
+      mac: "Command-Enter"
     },
-    {
-      name: "explain_query",
-      bindKey: {
-        win: "Ctrl-E",
-        mac: "Command-E"
-      },
-      exec: function(editor) {
-        runExplain();
-      }
+    exec: function(editor) {
+      runQuery();
     }
-  ]);
+  }, {
+    name: "explain_query",
+    bindKey: {
+      win: "Ctrl-E",
+      mac: "Command-E"
+    },
+    exec: function(editor) {
+      runExplain();
+    }
+  }]);
 
   editor.on("change", function() {
     if (writeQueryTimeout) {
@@ -888,7 +764,8 @@ function addShortcutTooltips() {
   if (navigator.userAgent.indexOf("OS X") > 0) {
     $("#run").attr("title", "Shortcut: ⌘+Enter");
     $("#explain").attr("title", "Shortcut: ⌘+E");
-  } else {
+  }
+  else {
     $("#run").attr("title", "Shortcut: Ctrl+Enter");
     $("#explain").attr("title", "Shortcut: Ctrl+E");
   }
@@ -897,23 +774,14 @@ function addShortcutTooltips() {
 // Get the latest release from Github API
 function getLatestReleaseInfo(current) {
   try {
-    $.get(
-      "https://api.github.com/repos/cyralinc/pgweb/releases/latest",
-      function(release) {
-        if (release.name != current.version) {
-          var message =
-            "Update available. Check out " +
-            release.tag_name +
-            " on <a target='_blank' href='" +
-            release.html_url +
-            "'>Github</a>";
-          $(".connection-settings .update")
-            .html(message)
-            .fadeIn();
-        }
+    $.get("https://api.github.com/repos/sosedoff/pgweb/releases/latest", function(release) {
+      if (release.name != current.version) {
+        var message = "Update available. Check out " + release.tag_name + " on <a target='_blank' href='" + release.html_url + "'>Github</a>";
+        $(".connection-settings .update").html(message).fadeIn();
       }
-    );
-  } catch (error) {
+    });
+  }
+  catch(error) {
     console.log("Cant get last release from github:", error);
   }
 }
@@ -925,9 +793,7 @@ function showConnectionSettings() {
     if (!data.version) return;
 
     // Show the current postgres version
-    $(".connection-settings .version")
-      .text("v" + data.version)
-      .show();
+    $(".connection-settings .version").text("v" + data.version).show();
 
     // Check for updates if running the actual release from Github
     if (data.git_sha == "") {
@@ -953,13 +819,12 @@ function showConnectionSettings() {
 
       // Add all available bookmarks
       for (key in data) {
-        $("<option value='" + key + "''>" + key + "</option>").appendTo(
-          "#connection_bookmarks"
-        );
+        $("<option value='" + key + "''>" + key + "</option>").appendTo("#connection_bookmarks");
       }
 
       $(".bookmarks").show();
-    } else {
+    }
+    else {
       $(".bookmarks").hide();
     }
   });
@@ -968,37 +833,25 @@ function showConnectionSettings() {
 }
 
 function getConnectionString() {
-  var url = $.trim($("#connection_url").val());
+  var url  = $.trim($("#connection_url").val());
   var mode = $(".connection-group-switch button.active").attr("data");
-  var ssl = $("#connection_ssl").val();
+  var ssl  = $("#connection_ssl").val();
 
   if (mode == "standard" || mode == "ssh") {
     var host = $("#pg_host").val();
     var port = $("#pg_port").val();
     var user = $("#pg_user").val();
     var pass = encodeURIComponent($("#pg_password").val());
-    var db = $("#pg_db").val();
+    var db   = $("#pg_db").val();
 
     if (port.length == 0) {
       port = "5432";
     }
 
-    url =
-      "postgres://" +
-      user +
-      ":" +
-      pass +
-      "@" +
-      host +
-      ":" +
-      port +
-      "/" +
-      db +
-      "?sslmode=" +
-      ssl;
-  } else {
-    var local =
-      url.indexOf("localhost") != -1 || url.indexOf("127.0.0.1") != -1;
+    url = "postgres://" + user + ":" + pass + "@" + host + ":" + port + "/" + db + "?sslmode=" + ssl;
+  }
+  else {
+    var local = url.indexOf("localhost") != -1 || url.indexOf("127.0.0.1") != -1;
 
     if (local && url.indexOf("sslmode") == -1) {
       url += "?sslmode=" + ssl;
@@ -1024,7 +877,7 @@ function bindTableHeaderMenu() {
     onItem: function(context, e) {
       var menuItem = $(e.target);
 
-      switch (menuItem.data("action")) {
+      switch(menuItem.data("action")) {
         case "copy_name":
           copyToClipboard($(context).data("name"));
           break;
@@ -1032,15 +885,15 @@ function bindTableHeaderMenu() {
         case "unique_values":
           showUniqueColumnsValues(
             $("#results").data("table"), // table name
-            $(context).data("name"), // column name
-            menuItem.data("counts") // display counts
+            $(context).data("name"),     // column name
+            menuItem.data("counts")      // display counts
           );
           break;
 
         case "num_stats":
           showFieldNumStats(
             $("#results").data("table"), // table name
-            $(context).data("name") // column name
+            $(context).data("name")      // column name
           );
           break;
       }
@@ -1063,16 +916,14 @@ function bindTableHeaderMenu() {
     onItem: function(context, e) {
       var menuItem = $(e.target);
 
-      switch (menuItem.data("action")) {
+      switch(menuItem.data("action")) {
         case "copy_value":
           copyToClipboard($(context).text());
           break;
         case "filter_by_value":
-          var colIdx = $(context).data("col");
+          var colIdx   = $(context).data("col");
           var colValue = $(context).text();
-          var colName = $("#results_header th")
-            .eq(colIdx)
-            .data("name");
+          var colName  = $("#results_header th").eq(colIdx).data("name");
 
           $("select.column").val(colName);
           $("select.filter").val("equal");
@@ -1089,13 +940,10 @@ function bindCurrentDatabaseMenu() {
     onItem: function(context, e) {
       var menuItem = $(e.target);
 
-      switch (menuItem.data("action")) {
+      switch(menuItem.data("action")) {
         case "export":
-          var url =
-            window.location.href.split("#")[0] +
-            "api/export?_session_id=" +
-            getSessionId();
-          var win = window.open(url, "_blank");
+          var url = window.location.href.split("#")[0] + "api/export?_session_id=" + getSessionId();
+          var win  = window.open(url, "_blank");
           win.focus();
           break;
       }
@@ -1106,12 +954,10 @@ function bindCurrentDatabaseMenu() {
 function bindDatabaseObjectsFilter() {
   var filterTimeout = null;
 
-  $("#filter_database_objects").on("keyup", function(e) {
+  $("#filter_database_objects").on("keyup", function (e) {
     clearTimeout(filterTimeout);
 
-    var val = $(this)
-      .val()
-      .trim();
+    var val = $(this).val().trim();
 
     // Reset search on ESC
     if (e.keyCode == 27 || val == "") {
@@ -1122,8 +968,8 @@ function bindDatabaseObjectsFilter() {
     $(".clear-objects-filter").show();
     $(".schema-group").addClass("expanded");
 
-    filterTimeout = setTimeout(function() {
-      filterObjectsByName(val);
+    filterTimeout = setTimeout(function () {
+      filterObjectsByName(val)
     }, 200);
   });
 
@@ -1139,7 +985,7 @@ function resetObjectsFilter() {
 }
 
 function filterObjectsByName(query) {
-  $("#objects li.schema-item").each(function(idx, el) {
+  $("#objects li.schema-item").each(function (idx, el) {
     var item = $(el);
     var name = $(el).data("name");
 
@@ -1154,13 +1000,7 @@ function filterObjectsByName(query) {
 function getQuotedSchemaTableName(table) {
   if (typeof table === "string" && table.indexOf(".") > -1) {
     var schemaTableComponents = table.split(".");
-    return [
-      '"',
-      schemaTableComponents[0],
-      '"."',
-      schemaTableComponents[1],
-      '"'
-    ].join("");
+    return ['"', schemaTableComponents[0], '"."', schemaTableComponents[1], '"'].join('');
   }
   return table;
 }
@@ -1177,9 +1017,9 @@ function bindContextMenus() {
         target: "#tables_context_menu",
         scopes: "li.schema-table",
         onItem: function(context, e) {
-          var el = $(e.target);
-          var table = getQuotedSchemaTableName($(context[0]).data("id"));
-          var action = el.data("action");
+          var el      = $(e.target);
+          var table   = getQuotedSchemaTableName($(context[0]).data("id"));
+          var action  = el.data("action");
           performTableAction(table, action, el);
         }
       });
@@ -1190,9 +1030,9 @@ function bindContextMenus() {
         target: "#view_context_menu",
         scopes: "li.schema-view",
         onItem: function(context, e) {
-          var el = $(e.target);
-          var table = getQuotedSchemaTableName($(context[0]).data("id"));
-          var action = el.data("action");
+          var el      = $(e.target);
+          var table   = getQuotedSchemaTableName($(context[0]).data("id"));
+          var action  = el.data("action");
           performViewAction(table, action, el);
         }
       });
@@ -1202,7 +1042,7 @@ function bindContextMenus() {
 
 function toggleDatabaseSearch() {
   $("#current_database").toggle();
-  $("#database_search").toggle();
+  $("#database_search").toggle();  
 }
 
 function enableDatabaseSearch(data) {
@@ -1210,47 +1050,31 @@ function enableDatabaseSearch(data) {
 
   input.typeahead("destroy");
 
-  input.typeahead({
-    source: data,
-    minLength: 0,
-    items: "all",
+  input.typeahead({ 
+    source: data, 
+    minLength: 0, 
+    items: "all", 
     autoSelect: false,
     fitToElement: true
   });
 
   input.typeahead("lookup").focus();
 
-  input.on("focusout", function(e) {
+  input.on("focusout", function(e){
     toggleDatabaseSearch();
     input.off("focusout");
   });
 }
 
 $(document).ready(function() {
-  $("#table_content").on("click", function() {
-    showTableContent();
-  });
-  $("#table_structure").on("click", function() {
-    showTableStructure();
-  });
-  $("#table_indexes").on("click", function() {
-    showTableIndexes();
-  });
-  $("#table_constraints").on("click", function() {
-    showTableConstraints();
-  });
-  $("#table_history").on("click", function() {
-    showQueryHistory();
-  });
-  $("#table_query").on("click", function() {
-    showQueryPanel();
-  });
-  $("#table_connection").on("click", function() {
-    showConnectionPanel();
-  });
-  $("#table_activity").on("click", function() {
-    showActivityPanel();
-  });
+  $("#table_content").on("click",     function() { showTableContent();     });
+  $("#table_structure").on("click",   function() { showTableStructure();   });
+  $("#table_indexes").on("click",     function() { showTableIndexes();     });
+  $("#table_constraints").on("click", function() { showTableConstraints(); });
+  $("#table_history").on("click",     function() { showQueryHistory();     });
+  $("#table_query").on("click",       function() { showQueryPanel();       });
+  $("#table_connection").on("click",  function() { showConnectionPanel();  });
+  $("#table_activity").on("click",    function() { showActivityPanel();    });
 
   $("#run").on("click", function() {
     runQuery();
@@ -1278,15 +1102,11 @@ $(document).ready(function() {
   });
 
   $("#objects").on("click", ".schema-group-title", function(e) {
-    $(this)
-      .parent()
-      .toggleClass("expanded");
+    $(this).parent().toggleClass("expanded");
   });
 
   $("#objects").on("click", ".schema-name", function(e) {
-    $(this)
-      .parent()
-      .toggleClass("expanded");
+    $(this).parent().toggleClass("expanded");
   });
 
   $("#objects").on("click", "li", function(e) {
@@ -1302,7 +1122,7 @@ $(document).ready(function() {
 
     showTableInfo();
 
-    switch (sessionStorage.getItem("tab")) {
+    switch(sessionStorage.getItem("tab")) {
       case "table_content":
         showTableContent();
         break;
@@ -1324,16 +1144,16 @@ $(document).ready(function() {
     e.preventDefault();
 
     var action = $(this).data("action");
-    var value = $(this).data("value");
+    var value  = $(this).data("value");
 
     performRowAction(action, value);
-  });
+  })
 
   $("#results").on("click", "th", function(e) {
     if (!$("#table_content").hasClass("selected")) return;
 
     var sortColumn = $(this).data("name");
-    var sortOrder = $(this).data("order") === "ASC" ? "DESC" : "ASC";
+    var sortOrder  = $(this).data("order") === "ASC" ? "DESC" : "ASC";
 
     $(this).data("order", sortOrder);
     showTableContent(sortColumn, sortOrder);
@@ -1345,22 +1165,18 @@ $(document).ready(function() {
     }
 
     var value = unescapeHtml($(this).html());
-    if (!value) {
-      return;
-    }
+    if (!value) { return; }
 
-    var textarea = $("<textarea />")
-      .text(value)
-      .addClass("form-control")
-      .css("width", $(this).css("width"));
+    var textarea = $("<textarea />").
+      text(value).
+      addClass("form-control").
+      css("width", $(this).css("width"));
 
     if (value.split("\n").length >= 3) {
       textarea.css("height", "200px");
     }
 
-    $(this)
-      .html(textarea)
-      .css("max-height", "200px");
+    $(this).html(textarea).css("max-height", "200px");
   });
 
   $("#refresh_tables").on("click", function() {
@@ -1371,21 +1187,13 @@ $(document).ready(function() {
     e.preventDefault();
     $(".current-page").data("page", 1);
 
-    var column = $(this)
-      .find("select.column")
-      .val();
-    var filter = $(this)
-      .find("select.filter")
-      .val();
-    var query = $.trim(
-      $(this)
-        .find("input")
-        .val()
-    );
+    var column = $(this).find("select.column").val();
+    var filter = $(this).find("select.filter").val();
+    var query  = $.trim($(this).find("input").val());
 
     if (filter && filterOptions[filter].indexOf("DATA") > 0 && query == "") {
       alert("Please specify filter query");
-      return;
+      return
     }
 
     showTableContent();
@@ -1405,10 +1213,9 @@ $(document).ready(function() {
     var val = $(this).val();
 
     if (["null", "not_null"].indexOf(val) >= 0) {
-      $(".filters input")
-        .hide()
-        .val("");
-    } else {
+      $(".filters input").hide().val("");
+    }
+    else {
       $(".filters input").show();
     }
   });
@@ -1428,7 +1235,7 @@ $(document).ready(function() {
 
   $("#pagination .next-page").on("click", function() {
     var current = $(".current-page").data("page");
-    var total = $(".current-page").data("pages");
+    var total   = $(".current-page").data("pages");
 
     if (total > current) {
       $(".current-page").data("page", current + 1);
@@ -1464,18 +1271,18 @@ $(document).ready(function() {
       enableDatabaseSearch(resp);
     });
   });
-
+  
   $("#database_search").change(function(e) {
     var current = $("#database_search").typeahead("getActive");
     if (current && current == $("#database_search").val()) {
       apiCall("post", "/switchdb", { db: current }, function(resp) {
         if (resp.error) {
-          alert(resp.error);
+          alert(resp.error);            
           return;
-        }
+        };
         window.location.reload();
       });
-    }
+    };
   });
 
   $("#edit_connection").on("click", function() {
@@ -1501,11 +1308,7 @@ $(document).ready(function() {
   });
 
   $("#connection_url").on("change", function() {
-    if (
-      $(this)
-        .val()
-        .indexOf("localhost") != -1
-    ) {
+    if ($(this).val().indexOf("localhost") != -1) {
       $("#connection_ssl").val("disable");
     }
   });
@@ -1522,7 +1325,7 @@ $(document).ready(function() {
     $(".connection-group-switch button").removeClass("active");
     $(this).addClass("active");
 
-    switch ($(this).attr("data")) {
+    switch($(this).attr("data")) {
       case "scheme":
         $(".connection-scheme-group").show();
         $(".connection-standard-group").hide();
@@ -1569,7 +1372,8 @@ $(document).ready(function() {
       $("#ssh_password").val(item.ssh.password);
       $("#ssh_key").val(item.ssh.key);
       $("#connection_ssh").click();
-    } else {
+    }
+    else {
       $("#ssh_host").val("");
       $("#ssh_port").val("");
       $("#ssh_user").val("");
@@ -1593,12 +1397,12 @@ $(document).ready(function() {
     }
 
     if ($(".connection-group-switch button.active").attr("data") == "ssh") {
-      params["ssh"] = 1;
-      params["ssh_host"] = $("#ssh_host").val();
-      params["ssh_port"] = $("#ssh_port").val();
-      params["ssh_user"] = $("#ssh_user").val();
+      params["ssh"]          = 1
+      params["ssh_host"]     = $("#ssh_host").val();
+      params["ssh_port"]     = $("#ssh_port").val();
+      params["ssh_user"]     = $("#ssh_user").val();
       params["ssh_password"] = $("#ssh_password").val();
-      params["ssh_key"] = $("#ssh_key").val();
+      params["ssh_key"]      = $("#ssh_key").val();
     }
 
     $("#connection_error").hide();
@@ -1609,10 +1413,9 @@ $(document).ready(function() {
 
       if (resp.error) {
         connected = false;
-        $("#connection_error")
-          .text(resp.error)
-          .show();
-      } else {
+        $("#connection_error").text(resp.error).show();
+      }
+      else {
         connected = true;
         loadSchemas();
 
@@ -1640,7 +1443,8 @@ $(document).ready(function() {
       connected = false;
       showConnectionSettings();
       $(".connection-actions").show();
-    } else {
+    }
+    else {
       connected = true;
       loadSchemas();
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/cyralinc/pgweb/pkg/cli"
+	"github.com/sosedoff/pgweb/pkg/cli"
 )
 
 func main() {

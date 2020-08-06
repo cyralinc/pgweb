@@ -10,8 +10,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/cyralinc/pgweb/pkg/data"
-	"github.com/cyralinc/pgweb/pkg/shared"
+	"github.com/sosedoff/pgweb/pkg/data"
+	"github.com/sosedoff/pgweb/pkg/shared"
 )
 
 var (

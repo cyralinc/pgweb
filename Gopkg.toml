@@ -25,7 +25,7 @@
 #   unused-packages = true
 
 [metadata.heroku]
-  root-package = "github.com/cyralinc/pgweb"
+  root-package = "github.com/sosedoff/pgweb"
   go-version = "1.11"
   install = [ "./..." ]
 

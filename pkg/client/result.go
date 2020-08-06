@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/cyralinc/pgweb/pkg/command"
+	"github.com/sosedoff/pgweb/pkg/command"
 )
 
 type Row []interface{}
