@@ -26,7 +26,7 @@
   line-height: 49px;
   font-size: 13px;
   padding: 0px 14px;
-  color: #d6cce2;
+  color: #ccd1e2;
   font-weight: 500;
   margin: 0 1px;
   cursor: pointer;
@@ -84,7 +84,7 @@
   font-weight: bold;
   font-size: 14px;
   color: #fff;
-  background: #79589f;
+  background: #354DA1;
   z-index: 900;
 }
 
@@ -122,7 +122,7 @@
 
 #sidebar .current-database input.typeahead {
   display: none;
-  background: #79589f;
+  background: #354DA1;
   width: 200px;
   height: 22px;
   color: #fff;
@@ -603,7 +603,7 @@
 }
 
 #edit_connection, #close_connection {
-  background: #79589f;
+  background: #354DA1;
   color: #fff;
   border-color: #fff;
 }

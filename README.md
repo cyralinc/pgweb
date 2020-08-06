@@ -2,12 +2,7 @@
 
 Web-based PostgreSQL database browser written in Go.
 
-[![Release](https://img.shields.io/github/release/sosedoff/pgweb.svg?label=Release)](https://github.com/sosedoff/pgweb/releases)
-[![Linux Build](https://img.shields.io/travis/sosedoff/pgweb/master.svg?label=Linux)](https://travis-ci.org/sosedoff/pgweb)
-[![Windows Build](https://img.shields.io/appveyor/ci/sosedoff/pgweb/master.svg?label=Windows)](https://ci.appveyor.com/project/sosedoff/pgweb)
-[![Go Report Card](https://goreportcard.com/badge/github.com/sosedoff/pgweb)](https://goreportcard.com/report/github.com/sosedoff/pgweb)
-[![GoDoc](https://godoc.org/github.com/sosedoff/pgweb?status.svg)](https://godoc.org/github.com/sosedoff/pgweb)
-[![Docker Pulls](https://img.shields.io/docker/pulls/sosedoff/pgweb.svg)](https://hub.docker.com/r/sosedoff/pgweb/)
+[![GoDoc](https://godoc.org/github.com/cyralinc/pgweb?status.svg)](https://godoc.org/github.com/cyralinc/pgweb)
 
 ## Overview
 
@@ -33,7 +28,7 @@ application to work with local or remote PostgreSQL databases.
 - Query history
 - Server bookmarks
 
-Visit [WIKI](https://github.com/sosedoff/pgweb/wiki) for more details
+Visit [WIKI](https://github.com/cyralinc/pgweb/wiki) for more details
 
 ## Pgweb Pro
 
@@ -53,10 +48,10 @@ Visit https://pgweb-demo.herokuapp.com to see pgweb in action.
 
 ## Installation
 
-[Precompiled binaries](https://github.com/sosedoff/pgweb/releases) for supported 
+[Precompiled binaries](https://github.com/cyralinc/pgweb/releases) for supported 
 operating systems are available.
 
-[More installation options](https://github.com/sosedoff/pgweb/wiki/Installation)
+[More installation options](https://github.com/cyralinc/pgweb/wiki/Installation)
 
 ## Usage
 
@@ -94,7 +89,7 @@ SESSIONS=1 pgweb
 
 ## Deploy on Heroku
 
-[![Heroku Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/cyralinc/pgweb)
+[![Heroku Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/cyralinc/pgweb/tree/change-imports)
 
 ## Testing
 
@@ -122,8 +117,8 @@ make test-all
 - Commit your changes
 - Execute test suite
 - Push your code and open a new pull request
-- Use [issues](https://github.com/sosedoff/pgweb/issues) for any questions
-- Check [wiki](https://github.com/sosedoff/pgweb/wiki) for extra documentation
+- Use [issues](https://github.com/cyralinc/pgweb/issues) for any questions
+- Check [wiki](https://github.com/cyralinc/pgweb/wiki) for extra documentation
 
 ## Contact
 

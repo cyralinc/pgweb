@@ -11,11 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/tuvistavie/securerandom"
 
-	"github.com/sosedoff/pgweb/pkg/bookmarks"
-	"github.com/sosedoff/pgweb/pkg/client"
-	"github.com/sosedoff/pgweb/pkg/command"
-	"github.com/sosedoff/pgweb/pkg/connection"
-	"github.com/sosedoff/pgweb/pkg/shared"
+	"github.com/cyralinc/pgweb/pkg/bookmarks"
+	"github.com/cyralinc/pgweb/pkg/client"
+	"github.com/cyralinc/pgweb/pkg/command"
+	"github.com/cyralinc/pgweb/pkg/connection"
+	"github.com/cyralinc/pgweb/pkg/shared"
 )
 
 var (

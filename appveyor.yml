@@ -1,4 +1,4 @@
-clone_folder: c:\gopath\src\github.com\sosedoff\pgweb
+clone_folder: c:\gopath\src\github.com\cyralinc\pgweb
 
 environment:
   GOPATH: c:\gopath
