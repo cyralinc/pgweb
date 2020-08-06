@@ -127,16 +127,18 @@
     </div>
   </div>
 
-  <div id="connection_window" style="display: block;">
+  <div id="connection_window">
     <div class="connection-settings">
       <div class="header">
-        <h1>Postgres Web Interface</h1>
+        <h1>pgweb</h1>
+        <div class="version"></div>
+        <div class="update alert alert-warning"></div>
       </div>
 
       <form role="form" class="form-horizontal" id="connection_form">
         <div class="text-center">
           <div class="btn-group btn-group-sm connection-group-switch">
-            <button type="button" data="scheme" class="btn btn-default" id="connection_scheme">URL</button>
+            <button type="button" data="scheme" class="btn btn-default" id="connection_scheme">Scheme</button>
             <button type="button" data="standard" class="btn btn-default active" id="connection_standard">Standard</button>
             <button type="button" data="ssh" class="btn btn-default" id="connection_ssh">SSH</button>
           </div>
@@ -200,8 +202,8 @@
             <label class="col-sm-3 control-label">SSL Mode</label>
             <div class="col-sm-9">
               <select class="form-control" id="connection_ssl">
-                <option value="disable" selected="selected">disable</option>
-                <option value="require">require</option>
+                <option value="disable">disable</option>
+                <option value="require" selected="selected">require</option>
                 <option value="verify-full">verify-full</option>
               </select>
             </div>
